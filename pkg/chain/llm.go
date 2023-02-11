@@ -32,10 +32,10 @@ type openAILLM struct {
 	MaxTokens int
 }
 
-func NewOpenAI() LLM {
+func NewOpenAI(maxTokens int) LLM {
 	return &openAILLM{
 		Client:    gogpt.NewClient(os.Getenv("OPENAI_API_KEY")),
-		MaxTokens: 250,
+		MaxTokens: maxTokens,
 	}
 }
 func (o *openAILLM) Generate(ctx context.Context, prompt string) (*LLMResult, error) {

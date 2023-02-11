@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/gerardaus/link/pkg/chain"
+	"github.com/gerardaus/chain/pkg/chain"
 )
 
 func main() {
@@ -22,7 +22,7 @@ AI:
 
 	llmchain := chain.NewLLMChain(
 		&chain.LLMChainConfig{
-			LLM:            chain.NewOpenAI(),
+			LLM:            chain.NewOpenAI(10),
 			PromptTemplate: prompt,
 			Verbose:        false,
 			Memory: chain.NewConversationBufferWindowMemory(

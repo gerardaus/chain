@@ -1,4 +1,4 @@
-module github.com/gerardaus/link
+module github.com/gerardaus/chain
 
 go 1.19
 

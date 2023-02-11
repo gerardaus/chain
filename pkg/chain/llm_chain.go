@@ -11,6 +11,7 @@ import (
 type LLMChain interface {
 	Predict(map[string]string) (string, error)
 	Generate(map[string]string) (*LLMResult, error)
+	GetMemory() Memory
 }
 
 type LLMChainConfig struct {
@@ -68,4 +69,8 @@ func (b *basicLLMChain) Generate(args map[string]string) (*LLMResult, error) {
 		b.Memory.SaveContext(args["input"], result.Text)
 	}
 	return result, nil
+}
+
+func (b *basicLLMChain) GetMemory() Memory {
+	return b.Memory
 }
