@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"magneticlabs.com/link/pkg/chain"
+	"github.com/gerardaus/link/pkg/chain"
 )
 
 func main() {

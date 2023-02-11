@@ -1,4 +1,4 @@
-module magneticlabs.com/link
+module github.com/gerardaus/link
 
 go 1.19
 
