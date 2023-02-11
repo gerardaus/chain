@@ -10,6 +10,7 @@ import (
 // llm chain
 type LLMChain interface {
 	Predict(map[string]string) (string, error)
+	Generate(map[string]string) (*LLMResult, error)
 }
 
 type LLMChainConfig struct {
@@ -36,13 +37,21 @@ func NewLLMChain(config *LLMChainConfig) LLMChain {
 }
 
 func (b *basicLLMChain) Predict(args map[string]string) (string, error) {
+	if result, err := b.Generate(args); err != nil {
+		return "", err
+	} else {
+		return result.Text, nil
+	}
+}
+
+func (b *basicLLMChain) Generate(args map[string]string) (*LLMResult, error) {
 	if b.Memory != nil {
 		maps.Copy(args, b.Memory.LoadMemoryVariables())
 	}
 
 	prompt, err := b.PromptTemplate.Format(args)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if b.Verbose {
@@ -51,14 +60,12 @@ func (b *basicLLMChain) Predict(args map[string]string) (string, error) {
 
 	result, err := b.LLM.Generate(context.Background(), prompt)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if b.Memory != nil {
-		b.Memory.SaveContext(
-			args["input"],
-			result.Text,
-		)
+		// XXX TODO fix this input here
+		b.Memory.SaveContext(args["input"], result.Text)
 	}
-	return result.Text, nil
+	return result, nil
 }
