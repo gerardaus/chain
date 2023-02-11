@@ -7,55 +7,49 @@ import (
 )
 
 func TestConversationBufferWindowMemory(t *testing.T) {
-	memory := NewConversationBufferWindowMemory(
-		&BufferConfig{
-			HumanPrefix: "Human:",
-			AIPrefix:    "AI:",
-			K:           2,
+	tests := []struct {
+		name     string
+		contexts [][]string
+		history  string
+		k        int
+	}{
+		{
+			name:     "test 1",
+			contexts: [][]string{{"in1", "out1"}, {"in2", "out2"}, {"in3", "out3"}},
+			history:  "Human: in3\nAI: out3",
+			k:        1,
 		},
-	)
-	memory.SaveContext(
-		"hey how are you",
-		"im good thanks!",
-	)
-	vars := memory.LoadMemoryVariables()
-	assert.Equal(t,
-		map[string]string{
-			"history": "Human: hey how are you\nAI: im good thanks!",
+		{
+			name:     "test 1",
+			contexts: [][]string{{"in1", "out1"}, {"in2", "out2"}, {"in3", "out3"}},
+			history:  "Human: in2\nAI: out2\nHuman: in3\nAI: out3",
+			k:        2,
 		},
-		vars,
-	)
-}
+		{
+			name:     "test 2",
+			contexts: [][]string{{"in1", "out1"}, {"in2", "out2"}, {"in3", "out3"}},
+			history:  "Human: in1\nAI: out1\nHuman: in2\nAI: out2\nHuman: in3\nAI: out3",
+			k:        3,
+		},
+	}
 
-func TestConversationBufferWindowMemory_k_limit(t *testing.T) {
-	memory := NewConversationBufferWindowMemory(
-		&BufferConfig{
-			HumanPrefix: "Human:",
-			AIPrefix:    "AI:",
-			K:           2,
-		},
-	)
+	for _, tt := range tests {
+		memory := NewConversationBufferWindowMemory(
+			&BufferConfig{
+				HumanPrefix: "Human:",
+				AIPrefix:    "AI:",
+				K:           tt.k,
+			},
+		)
+		for _, context := range tt.contexts {
+			memory.SaveContext(context[0], context[1])
+		}
 
-	memory.SaveContext(
-		"hey how are you",
-		"im good thanks!",
-	)
-	memory.SaveContext(
-		"hello",
-		"hi",
-	)
-	memory.SaveContext(
-		"bye",
-		"bye now!",
-	)
-
-	vars := memory.LoadMemoryVariables()
-	assert.Equal(t,
-		map[string]string{
-			"history": "Human: hello\nAI: hi\nHuman: bye\nAI: bye now!",
-		},
-		vars,
-	)
+		assert.Equal(t,
+			map[string]string{"history": tt.history},
+			memory.LoadMemoryVariables(),
+		)
+	}
 }
 
 func TestConversationBufferWindowMemory_Clear(t *testing.T) {
@@ -66,11 +60,7 @@ func TestConversationBufferWindowMemory_Clear(t *testing.T) {
 			K:           2,
 		},
 	)
-	memory.SaveContext(
-		"hey how are you",
-		"im good thanks!",
-	)
-
+	memory.SaveContext("hey how are you", "im good thanks!")
 	memory.Clear()
 	vars := memory.LoadMemoryVariables()
 	assert.Equal(t, map[string]string{"history": ""}, vars)
