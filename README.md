@@ -1,1 +1,3 @@
-# link
+# chain
+
+Inspired by LangChain.
