@@ -39,7 +39,6 @@ func NewOpenAI(maxTokens int) LLM {
 	}
 }
 func (o *openAILLM) Generate(ctx context.Context, prompt string) (*LLMResult, error) {
-	// todo do retries
 	resp, err := Retry(
 		func() (gogpt.CompletionResponse, error) {
 			return o.Client.CreateCompletion(ctx,
