@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"strings"
 	"time"
 
 	gogpt "github.com/gerardaus/go-gpt3"
@@ -63,7 +64,7 @@ func (o *openAILLM) Generate(ctx context.Context, prompt string) (*LLMResult, er
 	}
 
 	return &LLMResult{
-		Text:       resp.Choices[0].Text,
+		Text:       strings.Trim(resp.Choices[0].Text, "\n"),
 		TokensUsed: resp.Usage.TotalTokens,
 	}, nil
 }
