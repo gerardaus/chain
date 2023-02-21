@@ -22,11 +22,23 @@ AI:
 
 	llmchain := chain.NewLLMChain(
 		&chain.LLMChainConfig{
-			LLM:            chain.NewOpenAI(10),
+			LLM: chain.NewOpenAI(
+				&chain.OpenAIConfig{
+					Model:            "text-davinci-003",
+					Temperature:      0.9,
+					MaxTokens:        140,
+					TopP:             1,
+					BestOf:           1,
+					FrequencyPenalty: 0,
+					PresencePenalty:  0,
+					Echo:             false,
+					Stop:             []string{"\n"},
+				},
+			),
 			PromptTemplate: prompt,
 			Verbose:        false,
 			Memory: chain.NewConversationBufferWindowMemory(
-				&chain.BufferConfig{
+				&chain.ConversationBufferWindowMemoryConfig{
 					HumanPrefix: "Human:",
 					AIPrefix:    "AI:",
 					K:           20,

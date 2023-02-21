@@ -35,7 +35,7 @@ func TestConversationBufferWindowMemory(t *testing.T) {
 
 	for _, tt := range tests {
 		memory := NewConversationBufferWindowMemory(
-			&BufferConfig{
+			&ConversationBufferWindowMemoryConfig{
 				HumanPrefix: "Human:",
 				AIPrefix:    "AI:",
 				K:           tt.k,
@@ -54,7 +54,7 @@ func TestConversationBufferWindowMemory(t *testing.T) {
 
 func TestConversationBufferWindowMemory_Clear(t *testing.T) {
 	memory := NewConversationBufferWindowMemory(
-		&BufferConfig{
+		&ConversationBufferWindowMemoryConfig{
 			HumanPrefix: "Human:",
 			AIPrefix:    "AI:",
 			K:           2,

@@ -30,29 +30,46 @@ type LLM interface {
 
 type openAILLM struct {
 	Client    *gogpt.Client
+	Config    *OpenAIConfig
 	MaxTokens int
 }
 
-func NewOpenAI(maxTokens int) LLM {
+type OpenAIConfig struct {
+	Model            string
+	MaxTokens        int
+	Temperature      float32
+	TopP             float32
+	N                int
+	Stream           bool
+	BestOf           int
+	LogProbs         int
+	Echo             bool
+	Stop             []string
+	PresencePenalty  float32
+	FrequencyPenalty float32
+}
+
+func NewOpenAI(config *OpenAIConfig) LLM {
 	return &openAILLM{
-		Client:    gogpt.NewClient(os.Getenv("OPENAI_API_KEY")),
-		MaxTokens: maxTokens,
+		Client: gogpt.NewClient(os.Getenv("OPENAI_API_KEY")),
+		Config: config,
 	}
 }
+
 func (o *openAILLM) Generate(ctx context.Context, prompt string) (*LLMResult, error) {
 	resp, err := Retry(
 		func() (gogpt.CompletionResponse, error) {
 			return o.Client.CreateCompletion(ctx,
 				gogpt.CompletionRequest{
-					Model:            "text-davinci-003",
+					Model:            o.Config.Model,
 					Prompt:           prompt,
-					Temperature:      0.7,
-					MaxTokens:        o.MaxTokens,
-					TopP:             1,
-					BestOf:           1,
-					FrequencyPenalty: 0.5,
-					PresencePenalty:  0,
-					Echo:             false,
+					Temperature:      o.Config.Temperature,
+					MaxTokens:        o.Config.MaxTokens,
+					TopP:             o.Config.TopP,
+					BestOf:           o.Config.BestOf,
+					FrequencyPenalty: o.Config.FrequencyPenalty,
+					PresencePenalty:  o.Config.PresencePenalty,
+					Echo:             o.Config.Echo,
 				},
 			)
 		},

@@ -3,6 +3,7 @@ package chain
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"golang.org/x/exp/maps"
 )
@@ -15,25 +16,28 @@ type LLMChain interface {
 }
 
 type LLMChainConfig struct {
-	LLM            LLM
-	PromptTemplate *PromptTemplate
-	Verbose        bool
-	Memory         Memory
+	LLM                LLM
+	PromptTemplate     *PromptTemplate
+	Verbose            bool
+	Memory             Memory
+	IdleExpiryDuration time.Duration
 }
 
 type basicLLMChain struct {
-	PromptTemplate *PromptTemplate
-	LLM            LLM
-	Verbose        bool
-	Memory         Memory
+	PromptTemplate     *PromptTemplate
+	LLM                LLM
+	Verbose            bool
+	Memory             Memory
+	IdleExpiryDuration time.Duration
 }
 
 func NewLLMChain(config *LLMChainConfig) LLMChain {
 	return &basicLLMChain{
-		PromptTemplate: config.PromptTemplate,
-		LLM:            config.LLM,
-		Verbose:        config.Verbose,
-		Memory:         config.Memory,
+		PromptTemplate:     config.PromptTemplate,
+		LLM:                config.LLM,
+		Verbose:            config.Verbose,
+		Memory:             config.Memory,
+		IdleExpiryDuration: config.IdleExpiryDuration,
 	}
 }
 
