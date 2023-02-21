@@ -1,8 +1,12 @@
 package chain
 
-import "strings"
+import (
+	"strings"
+	"sync"
+)
 
 type memBuffer struct {
+	sync.Mutex
 	Buffer      []string
 	HumanPrefix string
 	AIPrefix    string
@@ -27,10 +31,15 @@ func NewConversationBufferWindowMemory(config *ConversationBufferWindowMemoryCon
 }
 
 func (m *memBuffer) Clear() {
+	m.Lock()
+	defer m.Unlock()
 	m.Buffer = []string{}
 }
 
 func (m *memBuffer) SaveContext(input, output string) {
+	m.Lock()
+	defer m.Unlock()
+
 	m.Buffer = append(m.Buffer,
 		strings.Join(
 			[]string{m.HumanPrefix + " " + input, m.AIPrefix + " " + output}, "\n"),
@@ -38,6 +47,9 @@ func (m *memBuffer) SaveContext(input, output string) {
 }
 
 func (m *memBuffer) LoadMemoryVariables() map[string]string {
+	m.Lock()
+	defer m.Unlock()
+
 	history := m.Buffer
 	if m.K < len(m.Buffer) {
 		history = m.Buffer[len(m.Buffer)-m.K:]
