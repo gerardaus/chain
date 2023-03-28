@@ -95,5 +95,8 @@ func Retry(fn func() (gogpt.CompletionResponse, error), retries int) (gogpt.Comp
 		}
 		time.Sleep(time.Duration(math.Pow(3, float64(i))) * time.Second)
 	}
-	return gogpt.CompletionResponse{}, fmt.Errorf("failed after %v attempts with err=%v", retries, err.Error())
+	if err != nil {
+		return gogpt.CompletionResponse{}, fmt.Errorf("failed after %v attempts with err=%v", retries, err.Error())
+	}
+	return gogpt.CompletionResponse{}, fmt.Errorf("failed after %v attempts with err=%v", retries, "timed out")
 }
